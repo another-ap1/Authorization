@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}{{user.username}} Info{% endblock %}
+
+{% block content %}
+<h1>Your Info!</h1>
+<div class="card mt-2">  
+    <div class="card-body">
+        <h3 class="card-title text-info">{{user.username}}</h3>
+        <h6 class="card-subtitle mb-2 text-muted">{{user.email}}</h6>
+        <p class="card-text">
+        {{user.full_name(user.first_name, user.last_name)}}
+        </p>
+        <form>
+            <button class="btn btn-danger"  formmethod="POST" formaction="/users/{{user.username}}/delete">Delete Account</button>
+        </form>
+    </div>
+</div>
+
+<h1 class="mt-4">Your Feedback</h1>
+<div class="card mt-2">
+    {% for feedback in user.feedback %}
+    <div class="card-body">
+        <h3 class="card-title text-info">{{feedback.title}}</h3>
+        <p class="card-text">
+        {{feedback.content}}
+        </p>
+        <form>
+        <button class="btn btn-success" formmethod="GET" formaction="/users/feedback/{{ feedback.id }}/update">Edit</button>
+        <button class="btn btn-danger" formmethod="POST" formaction="/feedback/{{feedback.id}}/delete">Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<h1 class="mt-4">Create Feedback</h1>
+<div class ="container mt-2">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {% for field in form 
+            if field.widget.input_type != 'hidden' %}
+            <p>
+                <b>{{ field.label }}</b>
+                {{ field(class_="form-control") }}
+
+                {% for error in form.errors %}
+                <span class="form-text text-danger">{{ error }}</span>
+                {% endfor %}
+            </p>
+        {% endfor %}
+        <button type="submit" class="btn btn-success" formmethod="POST" formaction="/users/{{user.username}}/feedback/add">Post</button>
+    </form>
+</div>
+
+{% endblock %}
